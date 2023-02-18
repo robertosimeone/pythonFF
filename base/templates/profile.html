@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <!-- <h1>Edit Profile</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ profile.bio }}
+      <br/><br/>
+    <button type="submit">Save Changes</button>
+  </form> -->
+{% if profile %}
+  <h1>{{user.username}}'s Profile</h1>
+  <strong>{{profile.bio}}</strong><br/>
+  <strong>Movies subscribed to</strong><br/>
+  {% for movie in user.subscribed_movies.all %}
+  <a href = "{% url 'movie' movie.id %}">
+  {{movie}}
+</a>
+  <br/>
+  {% endfor %}
+{% endif %}
+{% endblock %}

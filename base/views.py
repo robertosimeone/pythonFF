@@ -1,9 +1,18 @@
-from django.shortcuts import render
-from .forms import SignUpForm
+from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth import login,logout,authenticate
-
-
+from django.contrib.auth.decorators import login_required
+from .forms import ProfileForm
+from .forms import SignUpForm
+from .models import Movie
+from django.shortcuts import get_object_or_404
+from .models import Profile
+from django.contrib import messages
+from .models import User
+from .models import Comment
+from .forms import CommentForm
+from django.contrib.auth.forms import UserCreationForm
+from django import forms
 # Create your views here.
 
 # def signup(request):
@@ -16,9 +25,103 @@ from django.contrib.auth import login,logout,authenticate
 #     else:
 #         form = SignUpForm()
 #     return render(request, 'login.html')
-def login(request):
-    return render(request,'login.html',{})
+
+def login_user(request):
+    if request.method == 'POST':
+        email = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(request,email=email,password = password)
+        if user is not None:
+            login(request,user)
+            messages.success(request,('You have been logged in!'))
+            return redirect('homepage')
+        else:
+            messages.success(request,('There was an error logging in.Please try again...'))
+            return redirect('login')
+
+    else:
+        return render(request,'login.html',{})
+
 def logout_user(request):
-    pass
+    logout(request)
+    messages.success(request,('You have been logged out.'))
+    return redirect('homepage')
+
 def home(request):
-    return render(request,'home.html',{})
+    user = request.user
+    context = {'user':user}
+    return render(request,'home.html',context)
+def profile(request,pk):
+    if request.user.is_authenticated:
+        if pk != request.user.id:
+            messages.success(request,("You cannot view other peoples profiles"))
+            return render(request,'home.html')
+        user_id = request.user.id
+        profile = get_object_or_404(Profile, id=user_id)
+        user = get_object_or_404(User,id = user_id)
+        context = {
+        'profile': profile,
+        'user':user
+        }
+
+        return render(request, 'profile.html', context)
+    else:
+        messages.success(request,("You must be logged in to view this page"))
+        return render(request,'home.html')
+
+def register_user(request):
+    form = SignUpForm()
+    if request.method == 'POST':
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            password = form.cleaned_data['password1']
+            email = form.cleaned_data['email']
+            user = authenticate(request,email=email,password = password)
+            login(request,user)
+            messages.success(request,("You have successfully registered!"))
+            return redirect('homepage')
+    return render(request,'register.html',{'form':form})
+def movie_list(request):
+    movies = Movie.objects.all()
+    return render(request,'movie_list.html',{"movies":movies})
+def movie(request,pk):
+    if request.user.is_authenticated:
+        form = CommentForm(request.POST or None)
+        movie = Movie.objects.get(id = pk)
+        comments = Comment.objects.filter(movie_id = pk).order_by("-created_at")
+        user = request.user
+        context = {
+            'movie':movie,
+            'user':user,
+            'comments':comments,
+            'form':form
+        }
+        if request.method == 'POST':
+            if form.is_valid():
+                comment = form.save(commit=False)
+                comment.user = request.user
+                comment.movie = movie
+                comment.save()
+                return render(request,"movie.html",context)
+            
+        if request.method == 'POST':
+            action = request.POST['subscribe']
+            if action == "unsubscribe":
+                user.subscribed_movies.remove(movie)
+            elif action == "subscribe":
+                if user.token>=movie.price:
+                    user.subscribed_movies.add(movie)
+                    user.token -=movie.price
+                else:
+                    messages.success(request,("You don't have enough tokens to subscribe to this movie"))
+            user.save()
+        return render(request,"movie.html",context)
+    else:
+        movie = Movie.objects.get(id = pk)
+        comments = Comment.objects.filter(movie_id = pk).order_by("-created_at")
+        context = {
+            'movie':movie,
+            'comments':comments,
+        }
+        return render(request,"movie.html",context)

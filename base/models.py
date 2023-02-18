@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.db.models.signals import post_save
-
+from django.conf import settings
 
 def get_profile_image_filepath(self):
     return f'profile_images/{self.pk}/{"profile_image.png"}'
@@ -36,7 +36,7 @@ class MyAccountManager(BaseUserManager):
 
 
 class Movie(models.Model):
-    name = models.CharField(verbose_name="title", max_length=90)
+    name = models.CharField(verbose_name="title", max_length=90,default ='')
     duration = models.IntegerField(verbose_name="movie duration", default=0)
     description = models.TextField(verbose_name="movie description", default='')
     price = models.DecimalField(verbose_name="movie price", decimal_places=2, max_digits=5, default=0)
@@ -51,6 +51,8 @@ class Movie(models.Model):
 class User(AbstractBaseUser):
     username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(verbose_name="email", max_length=70, unique=True)
+    first_name = models.CharField(max_length = 30,default = '')
+    last_name = models.CharField(max_length = 30,default = '')
     token = models.DecimalField(verbose_name="token balance", decimal_places=2, max_digits=100000, default=0)
     streak_number = models.IntegerField(verbose_name="streak number", default=0)
     date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
@@ -90,7 +92,7 @@ class Statistic(models.Model):
     comment_counter = models.IntegerField(default=0)
     likes_counter = models.IntegerField(default=0)
 
-    user = models.ForeignKey(User, related_name="user", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="statistics", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
@@ -103,3 +105,22 @@ def create_statistics(sender, instance, created, **kwargs):
 
 
 post_save.connect(create_statistics, sender=User)
+
+class Profile(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    bio = models.CharField(max_length=500,blank =True)
+
+    def __str__(self):
+        return self.user.username
+class Comment(models.Model):
+    user = models.ForeignKey(User,related_name="commentsUser",null=True,on_delete = models.DO_NOTHING)
+    movie = models.ForeignKey(Movie,related_name='commentMovie',null=True,on_delete = models.DO_NOTHING)
+    body = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add = True)
+
+    def __str__(self):
+        return(
+            f'{self.user.username}'
+            f' ({self.created_at:%Y-%m-%d %H:%M}): '
+            f'{self.body}...'
+        )

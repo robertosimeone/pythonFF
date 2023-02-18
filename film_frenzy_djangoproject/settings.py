@@ -31,6 +31,9 @@ AUTH_USER_MODEL = "base.User"
 
 # Application definition
 
+STATICFILES_DIRS = [
+    "/Users/robertborisov/PycharmProjects/filmfrenzy/django_filmfrenzy_venv/film_frenzy_djangoproject/base/static",
+]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -116,7 +119,7 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
-
+#static/
 STATIC_URL = 'static/'
 
 # Default primary key field type
