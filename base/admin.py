@@ -1,13 +1,42 @@
 from django.contrib import admin
+from django.db import models
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth import get_user_model
+from django.forms import ModelChoiceField
 from .models import (
-Statistic,
-User,
-Movie,
-MyAccountManager,
-
+    Statistic,
+    User,
+    Movie,
 )
-admin.site.register(User)
-admin.site.register(Statistic)
+
 admin.site.register(Movie)
 
-# Register your models here.
+class UserAdminSelf(UserAdmin):
+    list_display = (
+        'email', 'username', 'password', 'token', 'streak_number', 'is_admin', 'is_superuser', 'is_active', 'is_staff',
+        'profile_image', 'date_joined', 'last_login')
+    search_fields = ('email', 'username')
+    readonly_fields = ('id', 'date_joined', 'last_login')
+    ordering = ('email',)
+
+    filter_horizontal = ()
+    list_filter = ()
+    fieldsets = ()
+
+
+admin.site.register(User, UserAdminSelf)
+
+
+class UserChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.username
+
+
+class StatisticsAdmin(admin.ModelAdmin):
+    model = Statistic
+    formfield_overrides = {
+        models.ForeignKey: {'form_class': UserChoiceField},
+    }
+
+
+admin.site.register(Statistic, StatisticsAdmin)

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
+from django.db.models.signals import post_save
 
 
 def get_profile_image_filepath(self):
@@ -48,7 +49,7 @@ class Movie(models.Model):
 
 # Create your models here.
 class User(AbstractBaseUser):
-    username = models.CharField(max_length=30)
+    username = models.CharField(max_length=30, unique=True)
     email = models.EmailField(verbose_name="email", max_length=70, unique=True)
     token = models.DecimalField(verbose_name="token balance", decimal_places=2, max_digits=100000, default=0)
     streak_number = models.IntegerField(verbose_name="streak number", default=0)
@@ -90,3 +91,15 @@ class Statistic(models.Model):
     likes_counter = models.IntegerField(default=0)
 
     user = models.ForeignKey(User, related_name="user", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.user.username
+
+
+def create_statistics(sender, instance, created, **kwargs):
+    if created:
+        user_statistic = Statistic(user=instance)
+        user_statistic.save()
+
+
+post_save.connect(create_statistics, sender=User)
