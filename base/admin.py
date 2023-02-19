@@ -8,7 +8,8 @@ from .models import (
     User,
     Movie,
     Profile,
-    Comment
+    Comment,
+    Order,
 )
 
 admin.site.register(Movie)
@@ -49,8 +50,17 @@ class ProfileAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ForeignKey: {'form_class': ProfileChoiceField},
     }
+class OrderChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.username
 
 
+class OrderAdmin(admin.ModelAdmin):
+    model = Order
+    formfield_overrides = {
+        models.ForeignKey: {'form_class': OrderChoiceField},
+    }
+admin.site.register(Order,OrderAdmin)
 admin.site.register(Comment)
 admin.site.register(Profile,ProfileAdmin)
 admin.site.register(Statistic, StatisticsAdmin)

@@ -14,7 +14,7 @@
           <a class="nav-link" href="{% url 'profile' request.user.id %}">My profile</a>
         </li>
           <li class="nav-item">
-          <a class="nav-link" href="#">Add funds</a>
+          <a class="nav-link" href="{% url 'add_funds' %}">Add funds</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>

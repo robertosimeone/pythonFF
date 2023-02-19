@@ -3,7 +3,15 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from django.db.models.signals import post_save
 from django.conf import settings
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
+def validate_non_negative(value):
+     if value <= 0:
+        raise ValidationError(
+            _('%(value)s is a negative number'),
+            params={'value': value},
+        )
 def get_profile_image_filepath(self):
     return f'profile_images/{self.pk}/{"profile_image.png"}'
 
@@ -132,3 +140,12 @@ class Comment(models.Model):
             f' ({self.created_at:%Y-%m-%d %H:%M}): '
             f'{self.body}...'
         )
+
+class Order(models.Model):
+    user = models.ForeignKey(User,related_name='order',on_delete=models.CASCADE)
+    order_value = models.DecimalField(verbose_name="order_value", decimal_places=2, max_digits=1000, default=0.01,validators=[validate_non_negative])
+    created_at = models.DateTimeField(auto_now_add = True)
+
+
+    def __str__(self):
+        return f'{id}'

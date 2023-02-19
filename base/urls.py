@@ -9,7 +9,8 @@ urlpatterns = [
     path('movie_list/',views.movie_list,name = 'movie_list'),
     path('movie_list/<int:pk>',views.movie,name='movie'),
     path('register/',views.register_user,name='register'),
-    path('update_profile/<int:pk>',views.update_profile,name = 'update_profile')
+    path('update_profile/<int:pk>',views.update_profile,name = 'update_profile'),
+    path('add_funds/',views.add_funds,name="add_funds"),
 
     #path('profile/',)
 

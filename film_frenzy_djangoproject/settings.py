@@ -36,7 +36,6 @@ STATICFILES_DIRS = [
     "/Users/robertborisov/PycharmProjects/filmfrenzy/django_filmfrenzy_venv/film_frenzy_djangoproject/base/static",
 ]
 INSTALLED_APPS = [
-    'paypal.standard.ipn',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -133,7 +132,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-#paypal settings 
-PAYPAL_TEST=True
-PAYPAL_RECEIVER_EMAIL='sandbox@gmail.com'
