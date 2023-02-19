@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.contrib import messages
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.decorators import login_required
-from .forms import ProfileForm
+from .forms import UserForm
 from .forms import SignUpForm
 from .models import Movie
 from django.shortcuts import get_object_or_404
@@ -125,3 +125,13 @@ def movie(request,pk):
             'comments':comments,
         }
         return render(request,"movie.html",context)
+def update_profile(request,pk):
+    if request.user.is_authenticated:
+        profile = get_object_or_404(Profile, id=pk)
+        form = UserForm(request.POST or None,request.FILES,instance=request.user)
+        if form.is_valid():
+            form.save()
+            return render(request,'profile.html',{'profile':profile,'user':request.user})
+        return render(request,'update_profile.html',{'profile':profile,'user':request.user,'form':form})
+    else:
+        return redirect('homepage')

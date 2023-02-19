@@ -6,7 +6,7 @@
 {% if movies %}
     {% for movie in movies %}
             <div class="card" style="width: 18rem;">
-        <img src='{% static 'images/default_movie_pic.png' %}' class="card-img-top" alt="Movie image">
+            <img src='{{movie.my_image}}' class="card-img-top">
         <div class="card-body">
             <h5 class="card-title">{{ movie.name}}</h5>
             <p class="card-text">{{ movie.price }}</p>

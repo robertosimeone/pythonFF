@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 {% block content %}
-<h1> {{movie.name}}</h1>
+<img src="{{movie.my_image}}"/>
+<br/><br/>
+<div class="card" style="width: 18rem;">
+    <div class="card-header">
+      About
+    </div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item">Title: {{movie.name}}</li>
+      <li class="list-group-item">Price: {{movie.price}}</li>
+      <li class="list-group-item">Duration(mins): {{movie.duration}}</li>
+    </ul>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      Description: {{movie.description}}
+    </div>
+  </div>
+  <br/><br/>
+  <br/><br/>
 {% if user.is_authenticated %}
     <form method = POST>
         {% csrf_token %}

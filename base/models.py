@@ -40,11 +40,18 @@ class Movie(models.Model):
     duration = models.IntegerField(verbose_name="movie duration", default=0)
     description = models.TextField(verbose_name="movie description", default='')
     price = models.DecimalField(verbose_name="movie price", decimal_places=2, max_digits=5, default=0)
-    image = models.ImageField(verbose_name="movie image", max_length=255, upload_to=None, null=True, blank=True,
-                              default=None)
+    image = models.ImageField(verbose_name="movie image", max_length=255, upload_to="images/", null=True, blank=True,
+                              default='17-640x640.jpeg')
 
     def __str__(self):
         return self.name
+    @property
+    def my_image(self):
+
+        if self.image :
+            return self.image.url
+        return '/media/images/png-transparent-clapperboard-computer-icons-film-movie-poster-angle-text-logo-thumbnail_fFfV2Vv.png'
+    
 
 
 # Create your models here.
@@ -63,8 +70,8 @@ class User(AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     # get_profile_image_filepath
     # get_default_profile_image
-    profile_image = models.ImageField(max_length=255, upload_to=None, null=True, blank=True,
-                                      default=None)
+    profile_image = models.ImageField(max_length=255, upload_to="images/", null=True, blank=True,
+                                      default='17-640x640.jpeg')
     subscribed_movies = models.ManyToManyField(Movie, blank=True)
 
     objects = MyAccountManager()
@@ -109,6 +116,7 @@ post_save.connect(create_statistics, sender=User)
 class Profile(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     bio = models.CharField(max_length=500,blank =True)
+
 
     def __str__(self):
         return self.user.username

@@ -3,11 +3,19 @@ from .models import User
 from django.contrib.auth.forms import UserCreationForm
 from.models import Profile
 from .models import Comment
-
-class ProfileForm(forms.ModelForm):
+from .models import Movie
+class UserForm(forms.ModelForm):
     class Meta:
-        model = Profile
-        fields = ('bio',)
+        model = User
+        fields = ('first_name','last_name','profile_image')
+        labels={
+            'first_name':'',
+            'last_name':''
+        }
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class':'form-control','placeholder':'Enter your first name here'}),
+            'last_name': forms.TextInput(attrs={'class':'form-control','placeholder':'Enter your last name here'}),
+        }
 class CommentForm(forms.ModelForm):
     body = forms.CharField(required= True,widget = forms.widgets.Textarea(
         attrs = {
