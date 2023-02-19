@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth import get_user_model
 from django.forms import ModelChoiceField
+from .models import Product
 from .models import (
     Statistic,
     User,
@@ -10,6 +11,7 @@ from .models import (
     Profile,
     Comment,
     Order,
+    OrderManually
 )
 
 admin.site.register(Movie)
@@ -50,18 +52,10 @@ class ProfileAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ForeignKey: {'form_class': ProfileChoiceField},
     }
-class OrderChoiceField(ModelChoiceField):
-    def label_from_instance(self, obj):
-        return obj.username
-
-
-class OrderAdmin(admin.ModelAdmin):
-    model = Order
-    formfield_overrides = {
-        models.ForeignKey: {'form_class': OrderChoiceField},
-    }
-admin.site.register(Order,OrderAdmin)
+admin.site.register(Order)
 admin.site.register(Comment)
 admin.site.register(Profile,ProfileAdmin)
 admin.site.register(Statistic, StatisticsAdmin)
 # admin.site.register(Comment)
+admin.site.register(Product)
+admin.site.register(OrderManually)

@@ -141,8 +141,24 @@ class Comment(models.Model):
             f'{self.body}...'
         )
 
+
+class Product(models.Model):
+    name = models.CharField(max_length=20)
+    price = models.FloatField(null=True,blank = True)
+    description = models.TextField(null = True,blank = True)
+    token_value = models.FloatField(null=True,blank=True)
+    def __str__(self):
+        return self.name
+
 class Order(models.Model):
-    user = models.ForeignKey(User,related_name='order',on_delete=models.CASCADE)
+    user = models.ForeignKey(User,related_name='order',null=True,on_delete=models.CASCADE,blank=True)
+    created_at = models.DateTimeField(auto_now_add = True)
+    product = models.ForeignKey(Product,max_length=200,null=True,blank=True,on_delete=models.DO_NOTHING)
+    def __str__(self):
+        return f'{self.id} Order'
+
+class OrderManually(models.Model):
+    user = models.ForeignKey(User,related_name='ordermanually',on_delete=models.CASCADE)
     order_value = models.DecimalField(verbose_name="order_value", decimal_places=2, max_digits=1000, default=0.01,validators=[validate_non_negative])
     created_at = models.DateTimeField(auto_now_add = True)
 

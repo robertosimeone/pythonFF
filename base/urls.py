@@ -11,6 +11,9 @@ urlpatterns = [
     path('register/',views.register_user,name='register'),
     path('update_profile/<int:pk>',views.update_profile,name = 'update_profile'),
     path('add_funds/',views.add_funds,name="add_funds"),
+    path('add_funds_manually/',views.add_funds_manually,name="add_funds_manually"),
+    path('checkout/<int:pk>',views.checkout,name='checkout'),
+    path('complete/',views.paymentComplete,name='complete'),
 
     #path('profile/',)
 

@@ -13,7 +13,10 @@ from .models import Comment
 from .forms import CommentForm
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
-from .forms import OrderForm
+from .models import Product
+from .forms import OrderFormManually
+# from .forms import OrderForm
+from .models import OrderManually
 from .models import Order
 # Create your views here.
 
@@ -59,8 +62,8 @@ def profile(request,pk):
             messages.success(request,("You cannot view other peoples profiles"))
             return render(request,'home.html')
         user_id = request.user.id
-        profile = get_object_or_404(Profile, id=user_id)
-        user = get_object_or_404(User,id = user_id)
+        profile = Profile.objects.get(user_id = user_id)
+        user = request.user 
         context = {
         'profile': profile,
         'user':user
@@ -129,7 +132,7 @@ def movie(request,pk):
         return render(request,"movie.html",context)
 def update_profile(request,pk):
     if request.user.is_authenticated:
-        profile = get_object_or_404(Profile, id=pk)
+        profile = Profile.objects.get(user_id = request.user.id)
         form = UserForm(request.POST or None,request.FILES, instance=request.user)
         if form.is_valid():
             form.save()
@@ -140,10 +143,32 @@ def update_profile(request,pk):
 
 def add_funds(request):
     if request.user.is_authenticated:
-        user_orders = Order.objects.filter(user_id = request.user.id).order_by('-created_at')
-        form = OrderForm()
+        products = Product.objects.all()
+        context = {
+            'products':products,
+        }
+        return render(request,'add_funds.html',context)
+    else:
+        return render('homepage')
+def checkout(request,pk):
+    if request.user.is_authenticated:
+        product = Product.objects.get(id = pk)
+        context={
+            'product':product
+        }
+        return render(request,'checkout.html',context)
+    else:
+        return redirect('homepage')
+def paymentComplete(request):
+    body = json.loads(request.body)
+    print('BODY:',body)
+    return JsonResponse('Payment completeed!',safe = False)
+def add_funds_manually(request):
+    if request.user.is_authenticated:
+        user_orders = OrderManually.objects.filter(user_id = request.user.id).order_by('-created_at')
+        form = OrderFormManually()
         if request.method == 'POST':
-            form = OrderForm(request.POST)
+            form = OrderFormManually(request.POST)
             if form.is_valid():
                 order = form.save(commit = False)
                 order.user = request.user
@@ -151,10 +176,10 @@ def add_funds(request):
                 user = request.user
                 user.token+=order.order_value
                 user.save()
-                return render(request,'add_funds.html',{'user':request.user,'form':form,'orders':user_orders})
+                return render(request,'add_funds_manually.html',{'user':request.user,'form':form,'orders':user_orders})
             else:
-                 return render(request,'add_funds.html',{"user":request.user,'form':OrderForm(),'orders':user_orders})
+                 return render(request,'add_funds_manually.html',{"user":request.user,'form':OrderFormManually(),'orders':user_orders})
         else:
-            return render(request,'add_funds.html',{"user":request.user,'form':form,'orders':user_orders})
+            return render(request,'add_funds_manually.html',{"user":request.user,'form':form,'orders':user_orders})
     else:
         return redirect('homepage')

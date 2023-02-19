@@ -5,6 +5,7 @@ from.models import Profile
 from .models import Comment
 from .models import Movie
 from .models import Order
+from .models import OrderManually
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
@@ -56,8 +57,8 @@ class SignUpForm(UserCreationForm):
 	    self.fields['password2'].label = ''
 	    self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
 
-class OrderForm(forms.ModelForm):
+class OrderFormManually(forms.ModelForm):
   
     class Meta:
-        model = Order
+        model = OrderManually
         fields = ('order_value',)
