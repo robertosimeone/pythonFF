@@ -87,7 +87,7 @@ class User(AbstractBaseUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
-    def str(self):
+    def __str__(self):
         return self.username
 
     def has_perm(self, perm, obj=None):
@@ -165,3 +165,9 @@ class OrderManually(models.Model):
 
     def __str__(self):
         return f'{id}'
+class ToDOPage(models.Model):
+    user = models.ForeignKey(User,related_name='todopage',on_delete = models.CASCADE)
+    body = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return user.username

@@ -65,8 +65,8 @@ def profile(request,pk):
         profile = Profile.objects.get(user_id = user_id)
         user = request.user 
         context = {
-        'profile': profile,
-        'user':user
+            'profile': profile,
+            'user': user
         }
 
         return render(request, 'profile.html', context)
@@ -149,7 +149,7 @@ def add_funds(request):
         }
         return render(request,'add_funds.html',context)
     else:
-        return render('homepage')
+        return redirect('homepage')
 def checkout(request,pk):
     if request.user.is_authenticated:
         product = Product.objects.get(id = pk)

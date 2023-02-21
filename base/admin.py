@@ -11,7 +11,8 @@ from .models import (
     Profile,
     Comment,
     Order,
-    OrderManually
+    OrderManually,
+    ToDOPage,
 )
 
 admin.site.register(Movie)
@@ -52,6 +53,17 @@ class ProfileAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ForeignKey: {'form_class': ProfileChoiceField},
     }
+class ToDOPageChoiceField(ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.username
+
+
+class ToDoAdmin(admin.ModelAdmin):
+    model = ToDOPage
+    formfield_overrides = {
+        models.ForeignKey: {'form_class': ToDOPageChoiceField},
+    }
+admin.site.register(ToDOPage,ToDoAdmin)
 admin.site.register(Order)
 admin.site.register(Comment)
 admin.site.register(Profile,ProfileAdmin)

@@ -14,6 +14,8 @@ urlpatterns = [
     path('add_funds_manually/',views.add_funds_manually,name="add_funds_manually"),
     path('checkout/<int:pk>',views.checkout,name='checkout'),
     path('complete/',views.paymentComplete,name='complete'),
+    # path('todo/<int:pk>',views.todo,name='todo'),
+    
 
     #path('profile/',)
 
